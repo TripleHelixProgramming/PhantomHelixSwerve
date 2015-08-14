@@ -22,10 +22,10 @@ public class PIDTurnModules extends Command {
     	drivetrain.setRearLeftAngle((oi.getZ() + 1) / 2 * 1000);
     	drivetrain.setRearRightAngle((oi.getZ() + 1) / 2 * 1000);
     	
-    	SmartDashboard.putNumber("Left Front Position", drivetrain.getFrontLeftAngle());
-    	SmartDashboard.putNumber("Right Front Position", drivetrain.getFrontRightAngle());
-    	SmartDashboard.putNumber("Left Front Rear", drivetrain.getRearLeftAngle());
-    	SmartDashboard.putNumber("Right Rear Position", drivetrain.getRearRightAngle());
+//    	SmartDashboard.putNumber("Left Front Position", drivetrain.getFrontLeftAngle());
+//    	SmartDashboard.putNumber("Right Front Position", drivetrain.getFrontRightAngle());
+//    	SmartDashboard.putNumber("Left Front Rear", drivetrain.getRearLeftAngle());
+//    	SmartDashboard.putNumber("Right Rear Position", drivetrain.getRearRightAngle());
     }
 
     @Override

@@ -13,10 +13,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Drivetrain extends Subsystem {
 	
-	private SwerveModule frontLeft = new SwerveModule(8, 4, 605);
-	private SwerveModule frontRight = new SwerveModule(7, 3, 293);
-	private SwerveModule rearLeft = new SwerveModule(5, 2, 558);
-	private SwerveModule rearRight = new SwerveModule(6, 1, 670);
+	private SwerveModule frontLeft = new SwerveModule(8, 4, 603);
+	private SwerveModule frontRight = new SwerveModule(7, 3, 289);
+	private SwerveModule rearLeft = new SwerveModule(5, 2, 556);
+	private SwerveModule rearRight = new SwerveModule(6, 1, 620);
     
   	private IMU imu;
     
@@ -75,9 +75,9 @@ public class Drivetrain extends Subsystem {
     	double rla = Math.atan2(a, c) * 180.0 / Math.PI;
     	
     	setFrontLeftAngle(fla);
-//    	setFrontRightAngle(fra);
-//    	setRearLeftAngle(rla);
-//    	setRearRightAngle(rra);
+    	setFrontRightAngle(fra);
+    	setRearLeftAngle(rla);
+    	setRearRightAngle(rra);
     	
     	//Calculate wheel speeds
     	double frontRightWheelSpeed = Math.sqrt(b * b + d * d);

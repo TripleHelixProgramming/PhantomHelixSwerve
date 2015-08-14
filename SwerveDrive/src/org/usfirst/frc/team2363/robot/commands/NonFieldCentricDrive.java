@@ -17,7 +17,7 @@ public class NonFieldCentricDrive extends Command {
 
     @Override
     protected void execute() {
-    	double y = oi.getY();
+    	double y = -oi.getY();
     	double x = oi.getX();
     	double z = oi.getZ();
     	
@@ -33,14 +33,14 @@ public class NonFieldCentricDrive extends Command {
     		z = 0;
     	}
     	
-//    	if (x == 0 && y == 0 & z == 0) {
-//    		drivetrain.setFrontLeftAngle(45);
-//    		drivetrain.setFrontRightAngle(-45);
-//    		drivetrain.setRearLeftAngle(-45);
-//    		drivetrain.setRearRightAngle(45);
-//    	} else {
+    	if (x == 0 && y == 0 & z == 0) {
+    		drivetrain.setFrontLeftAngle(0);
+    		drivetrain.setFrontRightAngle(0);
+    		drivetrain.setRearLeftAngle(0);
+    		drivetrain.setRearRightAngle(0);
+    	} else {
     		drivetrain.drive(y, x, z);
-//    	}
+    	}
     }
 
     @Override

@@ -23,9 +23,9 @@ public class ManuallyTurnModules extends Command {
     	drivetrain.setRearRightAngle(oi.getZ());
     	
     	SmartDashboard.putNumber("Left Front Position", drivetrain.getFrontLeftAngle());
-    	SmartDashboard.putNumber("Right Front Position", drivetrain.getFrontRightAngle());
-    	SmartDashboard.putNumber("Left Front Rear", drivetrain.getRearLeftAngle());
-    	SmartDashboard.putNumber("Right Rear Position", drivetrain.getRearRightAngle());
+//    	SmartDashboard.putNumber("Right Front Position", drivetrain.getFrontRightAngle());
+//    	SmartDashboard.putNumber("Left Front Rear", drivetrain.getRearLeftAngle());
+//    	SmartDashboard.putNumber("Right Rear Position", drivetrain.getRearRightAngle());
     }
 
     @Override

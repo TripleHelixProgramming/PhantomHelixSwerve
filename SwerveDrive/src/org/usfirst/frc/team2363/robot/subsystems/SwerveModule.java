@@ -4,11 +4,10 @@ import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CANTalon.ControlMode;
 import edu.wpi.first.wpilibj.CANTalon.FeedbackDevice;
 import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class SwerveModule implements PIDSource, PIDOutput {
+public class SwerveModule {
 	
 	private final CANTalon turnMotor;
 	private final CANTalon driveMotor;
@@ -24,20 +23,20 @@ public class SwerveModule implements PIDSource, PIDOutput {
 		turnMotor.setFeedbackDevice(FeedbackDevice.AnalogEncoder);
 		turnMotor.changeControlMode(ControlMode.PercentVbus);
 		turnMotor.reverseOutput(true);
-		turnMotor.disable();
-		turnMotor.enableControl();
+		turnMotor.enableBrakeMode(true);
+		turnMotor.reverseSensor(true);
 		
 		driveMotor = new CANTalon(driveMotorChannel);
 		driveMotor.setPID(0, 0, 0);
 		driveMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
 		driveMotor.changeControlMode(ControlMode.PercentVbus);
+		driveMotor.disableControl();
 		
 		OFFSET = offset;
 		
-		angleController = new PIDController(0.001, 0, 0, this, this);
+		angleController = new PIDController(0.01, 0, 0, new TalonInput(), turnMotor);
 		angleController.setInputRange(-180, 180);
 		angleController.setContinuous(true);
-		angleController.setOutputRange(-1, 1);
 		angleController.enable();
 	}
 	
@@ -48,6 +47,7 @@ public class SwerveModule implements PIDSource, PIDOutput {
 	public void setAngle(double angle) {
 		SmartDashboard.putNumber("Setpoint", angle);
 		angleController.setSetpoint(angle);
+		SmartDashboard.putNumber("Error", angleController.getError());
 	}
 	
 	/**
@@ -59,6 +59,7 @@ public class SwerveModule implements PIDSource, PIDOutput {
 		SmartDashboard.putNumber("Raw Angle", rawAngle);
 		double offsetAngle = (rawAngle - OFFSET + ENCODER_MAX) % ENCODER_MAX;
 		double convertedAngle = convertToAbsoluteAngle(offsetAngle);
+		SmartDashboard.putNumber("Converted Angle", convertedAngle);
 		return convertedAngle;
 	}
 	
@@ -82,15 +83,12 @@ public class SwerveModule implements PIDSource, PIDOutput {
 		return 0;
 	}
 	
-	@Override
-	public void pidWrite(double output) {
-		SmartDashboard.putNumber("Output", output);
-		turnMotor.set(output);
-	}
+	private class TalonInput implements PIDSource {
 
-	@Override
-	public double pidGet() {
-		SmartDashboard.putNumber("Angle", getAngle());
-		return getAngle();
+		@Override
+		public double pidGet() {
+			SmartDashboard.putNumber("Angle", getAngle());
+			return getAngle();
+		}
 	}
 }
