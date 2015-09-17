@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.CANTalon.ControlMode;
 import edu.wpi.first.wpilibj.CANTalon.FeedbackDevice;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveModule {
 	
@@ -15,26 +14,26 @@ public class SwerveModule {
 	private PIDController angleController;
 	
 	private final int OFFSET;
-	private static final double MAX_SPEED = 1;
+	private static final double MAX_SPEED = 0.5;
 	private static final double ENCODER_MAX = 1000;
 	
-	public SwerveModule(int turnMotorChannel, int driveMotorChannel, int offset) {
+	public SwerveModule(int turnMotorChannel, int driveMotorChannel, int offset, boolean invertDrive) {
 		turnMotor = new CANTalon(turnMotorChannel);
 		turnMotor.setFeedbackDevice(FeedbackDevice.AnalogEncoder);
 		turnMotor.changeControlMode(ControlMode.PercentVbus);
 		turnMotor.reverseOutput(true);
 		turnMotor.enableBrakeMode(true);
-		turnMotor.reverseSensor(true);
+		turnMotor.reverseSensor(false);
 		
 		driveMotor = new CANTalon(driveMotorChannel);
 		driveMotor.setPID(0, 0, 0);
 		driveMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
 		driveMotor.changeControlMode(ControlMode.PercentVbus);
-		driveMotor.disableControl();
+		driveMotor.reverseOutput(invertDrive);
 		
 		OFFSET = offset;
 		
-		angleController = new PIDController(0.01, 0, 0, new TalonInput(), turnMotor);
+		angleController = new PIDController(0.015, 0, 0, new TalonInput(), turnMotor);
 		angleController.setInputRange(-180, 180);
 		angleController.setContinuous(true);
 		angleController.enable();
@@ -45,9 +44,9 @@ public class SwerveModule {
 	 * @param angle the desired angle of the module
 	 */
 	public void setAngle(double angle) {
-		SmartDashboard.putNumber("Setpoint", angle);
+//		SmartDashboard.putNumber("Setpoint", angle);
 		angleController.setSetpoint(angle);
-		SmartDashboard.putNumber("Error", angleController.getError());
+//		SmartDashboard.putNumber("Error", angleController.getError());
 	}
 	
 	/**
@@ -55,11 +54,11 @@ public class SwerveModule {
 	 * @return the current angle of the module
 	 */
 	public double getAngle() {
-		double rawAngle = turnMotor.getPosition();
-		SmartDashboard.putNumber("Raw Angle", rawAngle);
+		double rawAngle = ENCODER_MAX - turnMotor.getPosition();
+//		SmartDashboard.putNumber("Raw Angle", rawAngle);
 		double offsetAngle = (rawAngle - OFFSET + ENCODER_MAX) % ENCODER_MAX;
 		double convertedAngle = convertToAbsoluteAngle(offsetAngle);
-		SmartDashboard.putNumber("Converted Angle", convertedAngle);
+//		SmartDashboard.putNumber("Converted Angle", convertedAngle);
 		return convertedAngle;
 	}
 	
@@ -87,7 +86,7 @@ public class SwerveModule {
 
 		@Override
 		public double pidGet() {
-			SmartDashboard.putNumber("Angle", getAngle());
+//			SmartDashboard.putNumber("Angle", getAngle());
 			return getAngle();
 		}
 	}

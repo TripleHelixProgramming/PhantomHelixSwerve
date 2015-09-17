@@ -2,8 +2,8 @@ package org.usfirst.frc.team2363.robot.commands;
 
 import static org.usfirst.frc.team2363.robot.Robot.drivetrain;
 import static org.usfirst.frc.team2363.robot.Robot.oi;
-
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class NonFieldCentricDrive extends Command {
 
@@ -34,13 +34,20 @@ public class NonFieldCentricDrive extends Command {
     	}
     	
     	if (x == 0 && y == 0 & z == 0) {
-    		drivetrain.setFrontLeftAngle(0);
-    		drivetrain.setFrontRightAngle(0);
-    		drivetrain.setRearLeftAngle(0);
-    		drivetrain.setRearRightAngle(0);
+    		drivetrain.setFrontLeftAngle(-45);
+    		drivetrain.setFrontRightAngle(45);
+    		drivetrain.setRearLeftAngle(45);
+    		drivetrain.setRearRightAngle(-45);
+    		
+    		drivetrain.setFrontLeftSpeed(0);
+    		drivetrain.setFrontRightSpeed(0);
+    		drivetrain.setRearLeftSpeed(0);
+    		drivetrain.setRearRightSpeed(0);
     	} else {
-    		drivetrain.drive(y, x, z);
+    		drivetrain.drive(y, x, z, false);
     	}
+    	
+    	SmartDashboard.putNumber("Facing", drivetrain.getFacing());
     }
 
     @Override

@@ -13,10 +13,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Drivetrain extends Subsystem {
 	
-	private SwerveModule frontLeft = new SwerveModule(8, 4, 603);
-	private SwerveModule frontRight = new SwerveModule(7, 3, 289);
-	private SwerveModule rearLeft = new SwerveModule(5, 2, 556);
-	private SwerveModule rearRight = new SwerveModule(6, 1, 620);
+	private SwerveModule frontLeft = new SwerveModule(8, 2, 230, false);
+	private SwerveModule frontRight = new SwerveModule(1, 4, 420, false);
+	private SwerveModule rearLeft = new SwerveModule(5, 10, 950, false);
+	private SwerveModule rearRight = new SwerveModule(6, 11, 200, false);
     
   	private IMU imu;
     
@@ -29,6 +29,7 @@ public class Drivetrain extends Subsystem {
 			SerialPort serialPort = new SerialPort(57600, SerialPort.Port.kMXP);
 			byte updateRateHz = 50;
 			imu = new IMU(serialPort, updateRateHz);
+			imu.zeroYaw();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -48,8 +49,8 @@ public class Drivetrain extends Subsystem {
      */
     public void drive(double y, double x, double z, boolean fieldCentric) {
     	if (fieldCentric) {
-    		drive(y * Math.cos(imu.getYaw()) + x * Math.sin(imu.getYaw()),
-    				-y * Math.sin(imu.getYaw()) + Math.cos(imu.getYaw()),
+    		drive(y * Math.cos(getFacing()) + x * Math.sin(getFacing()),
+    				-y * Math.sin(getFacing()) + x * Math.cos(getFacing()),
     				z);
     	} else {
 	    	drive(y, x, z);
@@ -69,15 +70,19 @@ public class Drivetrain extends Subsystem {
     	double d = y + z * (TRACK_WIDTH / R);
     	
     	//Calculate module angles
-    	double fra = Math.atan2(b, d) * 180.0 / Math.PI;
-    	double fla = Math.atan2(b, c) * 180.0 / Math.PI;
-    	double rra = Math.atan2(a, d) * 180.0 / Math.PI;
-    	double rla = Math.atan2(a, c) * 180.0 / Math.PI;
+    	double fla = Math.atan2(b, d) * 180.0 / Math.PI;
+    	double fra = Math.atan2(b, c) * 180.0 / Math.PI;
+    	double rla = Math.atan2(a, d) * 180.0 / Math.PI;
+    	double rra = Math.atan2(a, c) * 180.0 / Math.PI;
     	
     	setFrontLeftAngle(fla);
+    	SmartDashboard.putNumber("Front Left Angle", fla);
     	setFrontRightAngle(fra);
+    	SmartDashboard.putNumber("Front Right Angle", fra);
     	setRearLeftAngle(rla);
+    	SmartDashboard.putNumber("Rear Left Angle", rla);
     	setRearRightAngle(rra);
+    	SmartDashboard.putNumber("Rear Right Angle", rra);
     	
     	//Calculate wheel speeds
     	double frontRightWheelSpeed = Math.sqrt(b * b + d * d);
@@ -93,21 +98,20 @@ public class Drivetrain extends Subsystem {
     	
     	if (max > 1) {
     		frontLeftWheelSpeed /= max;
-    		frontLeftWheelSpeed = frontLeftWheelSpeed / max;
+    		frontLeftWheelSpeed /= max;
     		frontRightWheelSpeed /= max;
     		rearLeftWheelSpeed /= max;
     		rearRightWheelSpeed /= max;
     	}
     	
+    	setFrontLeftSpeed(frontLeftWheelSpeed);
     	SmartDashboard.putNumber("Front Left Speed", frontLeftWheelSpeed);
+    	setFrontRightSpeed(frontRightWheelSpeed);
     	SmartDashboard.putNumber("Front Right Speed", frontRightWheelSpeed);
+    	setRearLeftSpeed(rearLeftWheelSpeed);
     	SmartDashboard.putNumber("Rear Left Speed", rearLeftWheelSpeed);
+    	setRearRightSpeed(rearRightWheelSpeed);
     	SmartDashboard.putNumber("Rear Right Speed", rearRightWheelSpeed);
-    	
-//    	frontLeftSpeed.set(frontLeftWheelSpeed * MAX_WHEEL_SPEED);
-//    	frontRightSpeed.set(frontRightWheelSpeed * MAX_WHEEL_SPEED);
-//    	rearLeftSpeed.set(rearLeftWheelSpeed * MAX_WHEEL_SPEED);
-//    	rearRightSpeed.set(rearRightWheelSpeed * MAX_WHEEL_SPEED);
     }
     
     
@@ -117,9 +121,7 @@ public class Drivetrain extends Subsystem {
      * @param angle the angle to turn the wheel to
      */
     public void setFrontLeftAngle(double angle) {
-    	SmartDashboard.putNumber("Target Front Left Angle", angle);
     	frontLeft.setAngle(angle);
-    	SmartDashboard.putNumber("Actual Front Left Angle", frontLeft.getAngle());
     }
     
     /**
@@ -135,9 +137,7 @@ public class Drivetrain extends Subsystem {
      * @param angle the angle to turn the wheel to
      */
     public void setFrontRightAngle(double angle) {
-    	SmartDashboard.putNumber("Target Front Right Angle", angle);
     	frontRight.setAngle(angle);
-    	SmartDashboard.putNumber("Actual Front Right Angle", frontRight.getAngle());
     }
     
     /**
@@ -153,9 +153,7 @@ public class Drivetrain extends Subsystem {
      * @param angle the angle to turn the wheel to
      */
     public void setRearLeftAngle(double angle) {
-    	SmartDashboard.putNumber("Target Rear Left Angle", angle);
     	rearLeft.setAngle(angle);
-    	SmartDashboard.putNumber("Actual Rear Left Angle", rearLeft.getAngle());
     }
     
     /**
@@ -171,9 +169,7 @@ public class Drivetrain extends Subsystem {
      * @param angle the angle to turn the wheel to
      */
     public void setRearRightAngle(double angle) {
-    	SmartDashboard.putNumber("Target Rear Right Angle", angle);
     	rearRight.setAngle(angle);
-    	SmartDashboard.putNumber("Actual Rear Right Angle", rearRight.getAngle());
     }
     
     /**
@@ -246,6 +242,10 @@ public class Drivetrain extends Subsystem {
      */
     public double getRearRightSpeed() {
     	return rearRight.getSpeed();
+    }
+    
+    public double getFacing() {
+    	return (imu.getYaw() + 270) % 360 - 180;
     }
 }
 
